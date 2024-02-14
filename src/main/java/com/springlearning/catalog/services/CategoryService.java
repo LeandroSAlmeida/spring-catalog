@@ -3,12 +3,12 @@ package com.springlearning.catalog.services;
 import com.springlearning.catalog.domain.Category;
 import com.springlearning.catalog.dto.CategoryDTO;
 import com.springlearning.catalog.repositories.CategoryRepository;
+import com.springlearning.catalog.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,9 +23,10 @@ public class CategoryService {
     }
     @Transactional(readOnly = true)
     public CategoryDTO findById(Long id){
-        Optional<Category> obj = repository.findById(id);
-        Category entity = obj.get();
-        return new CategoryDTO(entity);
+        Category result = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Recurso não encontrado")
+        );
+        return new CategoryDTO(result);
     }
 
 
