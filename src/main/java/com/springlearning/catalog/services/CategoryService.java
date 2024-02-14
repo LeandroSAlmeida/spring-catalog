@@ -4,6 +4,7 @@ import com.springlearning.catalog.domain.Category;
 import com.springlearning.catalog.dto.CategoryDTO;
 import com.springlearning.catalog.repositories.CategoryRepository;
 import com.springlearning.catalog.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +29,22 @@ public class CategoryService {
         );
         return new CategoryDTO(result);
     }
+    @Transactional
     public CategoryDTO insert(CategoryDTO dto){
         Category entity = new Category();
         entity.setName(dto.getName());
         entity = repository.save(entity);
         return new CategoryDTO(entity);
     }
-
+    @Transactional
+    public CategoryDTO update(Long id,CategoryDTO dto) {
+        try {
+            Category entity = repository.getReferenceById(id);
+            entity.setName(dto.getName());
+            entity = repository.save(entity);
+            return new CategoryDTO(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Id não encontrado" + id);
+        }
+    }
 }
