@@ -2,6 +2,7 @@ package com.springlearning.catalog.domain;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.util.Objects;
 @Entity
 @Table(name = "tb_category")
@@ -11,6 +12,11 @@ public class Category {
     private Long id;
     private String name;
 
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant createdAt;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant updateAt;
+
     public Category() {
     }
 
@@ -18,7 +24,14 @@ public class Category {
         this.id = id;
         this.name = name;
     }
-
+    @PrePersist
+    public void prePersist(){
+        createdAt = Instant.now();
+    }
+    @PreUpdate
+    public void preUpdate(){
+        updateAt = Instant.now();
+    }
     public Long getId() {
         return id;
     }
@@ -33,6 +46,13 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    public Instant getUpdateAt() {
+        return updateAt;
     }
 
     @Override
