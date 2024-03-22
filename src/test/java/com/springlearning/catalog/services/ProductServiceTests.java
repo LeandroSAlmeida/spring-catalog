@@ -1,6 +1,7 @@
 package com.springlearning.catalog.services;
 
 import com.springlearning.catalog.repositories.ProductRepository;
+import com.springlearning.catalog.services.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,10 +28,18 @@ public class ProductServiceTests {
         nonExistingId = 1000L;
 
         Mockito.doNothing().when(repository).deleteById(existingId);
+        Mockito.when(repository.existsById(existingId)).thenReturn(true);
         Mockito.when(repository.existsById(nonExistingId)).thenReturn(false);
+
     }
 
+    @Test
+    public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist(){
 
+        Assertions.assertThrows(ResourceNotFoundException.class,()-> {
+            service.delete(nonExistingId);
+        });
+    }
 
 
     @Test
@@ -46,5 +55,7 @@ public class ProductServiceTests {
         // Verificando se o método delete foi chamado com o ID correto
         Mockito.verify(repository, Mockito.times(1)).deleteById(existingId);
     }
+
+
 }
 
