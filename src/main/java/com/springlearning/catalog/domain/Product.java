@@ -93,6 +93,7 @@ public class Product {
         return categories;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
