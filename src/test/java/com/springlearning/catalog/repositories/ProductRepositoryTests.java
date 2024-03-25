@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.Optional;
 
 @DataJpaTest
-public class ProductRepositoyuTests {
+public class ProductRepositoryTests {
 
     @Autowired
     private ProductRepository repository;
