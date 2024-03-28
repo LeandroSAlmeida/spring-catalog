@@ -1,5 +1,8 @@
 package com.springlearning.catalog.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springlearning.catalog.dto.ProductDTO;
+import com.springlearning.catalog.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +25,8 @@ public class ProductControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private Long existingId;
     private Long nonExistingId;
@@ -50,6 +55,39 @@ public class ProductControllerIT {
 
     }
 
+    @Test
+    public void updateShouldReturnProductDTOWhenIdExist() throws Exception{
 
+        ProductDTO productDTO = Factory.createProductDTO();
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
 
+        String expectedName = productDTO.getName();
+        String expectedDescription = productDTO.getName();
+
+        ResultActions result =
+                mockMvc.perform(put("/products/{id}", existingId)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.id").value(existingId));
+        result.andExpect(jsonPath("$.name").value(expectedName));
+        result.andExpect(jsonPath("$.description").value(expectedDescription));
+
+    }
+
+    @Test
+    public void updateShouldReturnNotFoundWhenIdDoesNotExist() throws Exception {
+
+        ProductDTO productDTO = Factory.createProductDTO();
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+
+        ResultActions result =
+                mockMvc.perform(put("/products/{id}", nonExistingId)
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+        result.andExpect(status().isNotFound());
+
+    }
 }
