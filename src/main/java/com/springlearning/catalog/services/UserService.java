@@ -4,6 +4,7 @@ import com.springlearning.catalog.domain.Role;
 import com.springlearning.catalog.domain.User;
 import com.springlearning.catalog.dto.RoleDTO;
 import com.springlearning.catalog.dto.UserDTO;
+import com.springlearning.catalog.dto.UserInsertDTO;
 import com.springlearning.catalog.repositories.RoleRepository;
 import com.springlearning.catalog.repositories.UserRepository;
 import com.springlearning.catalog.services.exceptions.DatabaseException;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository repository;
     @Autowired
@@ -38,9 +42,10 @@ public class UserService {
         return new UserDTO(result);
     }
     @Transactional
-    public UserDTO insert(UserDTO dto){
+    public UserDTO insert(UserInsertDTO dto){
         User entity = new User();
         copyDtotoEntity(dto,entity);
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
         entity = repository.save(entity);
         return new UserDTO(entity);
     }
