@@ -5,6 +5,7 @@ import com.springlearning.catalog.domain.User;
 import com.springlearning.catalog.dto.RoleDTO;
 import com.springlearning.catalog.dto.UserDTO;
 import com.springlearning.catalog.dto.UserInsertDTO;
+import com.springlearning.catalog.projections.UserDetailsProjection;
 import com.springlearning.catalog.repositories.RoleRepository;
 import com.springlearning.catalog.repositories.UserRepository;
 import com.springlearning.catalog.services.exceptions.DatabaseException;
@@ -14,20 +15,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
     private UserRepository repository;
+
     @Autowired
     private RoleRepository roleRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        List<UserDetailsProjection> result = repository.searchUserAndRolesByEmail(username);
+        if(result.size() == 0) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        User user = new User();
+        user.setEmail(username);
+        user.setPassword(result.get(0).getPassword());
+        for (UserDetailsProjection projection : result){
+            user.addRole(new Role(projection.getRoleId(), projection.getAuthorities()));
+        }
+        return user;
+    }
 
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllPaged(Pageable pageable){
