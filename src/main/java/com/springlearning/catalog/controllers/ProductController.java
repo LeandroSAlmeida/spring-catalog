@@ -1,6 +1,7 @@
 package com.springlearning.catalog.controllers;
 
 import com.springlearning.catalog.dto.ProductDTO;
+import com.springlearning.catalog.projections.ProductProjection;
 import com.springlearning.catalog.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,8 +22,8 @@ public class ProductController {
 
 
    @GetMapping
-   public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable) {
-       Page<ProductDTO> list = service.findAllPaged(pageable);
+   public ResponseEntity<Page<ProductProjection>> findAll(Pageable pageable) {
+       Page<ProductProjection> list = service.testQuery(pageable);
        return ResponseEntity.ok().body(list);
     }
 
