@@ -15,15 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class CategoryService {
 
     @Autowired
     private CategoryRepository repository;
     @Transactional(readOnly = true)
-    public Page<CategoryDTO> findAllPaged(Pageable pageable){
-       Page<Category> list = repository.findAll(pageable);
-       return list.map(x -> new CategoryDTO(x));
+    public List<CategoryDTO> findAll(){
+       List<Category> list = repository.findAll();
+       return list.stream().map(x -> new CategoryDTO(x)).toList();
     }
     @Transactional(readOnly = true)
     public CategoryDTO findById(Long id){
