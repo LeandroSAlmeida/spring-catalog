@@ -9,7 +9,9 @@ import com.springlearning.catalog.repositories.CategoryRepository;
 import com.springlearning.catalog.repositories.ProductRepository;
 import com.springlearning.catalog.services.exceptions.DatabaseException;
 import com.springlearning.catalog.services.exceptions.ResourceNotFoundException;
+import com.springlearning.catalog.util.Utils;
 import jakarta.persistence.EntityNotFoundException;
+import jdk.jshell.execution.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -105,7 +107,10 @@ public class ProductService {
         List<Long> productIds = page.map(x -> x.getId()).toList();
 
         List<Product> entities = repository.searchProductWithCategories(productIds);
+        entities = (List<Product>) Utils.replace(page.getContent(), entities);
+
         List<ProductDTO> dtos = entities.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
+
 
         Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
 
