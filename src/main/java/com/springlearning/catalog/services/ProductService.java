@@ -96,7 +96,7 @@ public class ProductService {
 
     }
     @Transactional(readOnly = true)
-    public Page<ProductDTO> testFindAllPagedWithParam(String name, String categoryId, Pageable pageable) {
+    public Page<ProductDTO> FindAllPagedWithParam(String name, String categoryId, Pageable pageable) {
 
         List<Long> categoryIds = Arrays.asList();
         if (!"0".equals(categoryId)) {

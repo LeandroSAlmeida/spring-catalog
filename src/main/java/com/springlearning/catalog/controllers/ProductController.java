@@ -26,7 +26,7 @@ public class ProductController {
            @RequestParam(value = "name", defaultValue = "") String name,
            @RequestParam(value = "categoryId", defaultValue = "0") String categoryId,
            Pageable pageable) {
-       Page<ProductDTO> list = service.testFindAllPagedWithParam(name, categoryId,pageable);
+       Page<ProductDTO> list = service.FindAllPagedWithParam(name, categoryId,pageable);
        return ResponseEntity.ok().body(list);
     }
 
