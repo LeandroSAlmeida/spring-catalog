@@ -12,6 +12,9 @@ public class StandardError {
     public StandardError() {
     }
 
+    public StandardError(Instant now, int value, String message, String requestURI) {
+    }
+
     public Instant getTimestamp() {
         return timestamp;
     }

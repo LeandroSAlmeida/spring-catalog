@@ -1,6 +1,7 @@
 package com.springlearning.catalog.controllers.exceptions;
 
 import com.springlearning.catalog.services.exceptions.DatabaseException;
+import com.springlearning.catalog.services.exceptions.EmailException;
 import com.springlearning.catalog.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,13 @@ public class ResourceExceptionHandler {
         err.setError("Database exception");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<StandardError> email(EmailException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }
